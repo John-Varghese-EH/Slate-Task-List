@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: slate-task-list
+    name: slate
     runtime: node
     plan: free
     region: oregon

@@ -176,30 +176,6 @@ Verifies CRUD persistence, category filters, session authentication, and tenant 
 
 ---
 
-## Deployment to Render
-
-Slate is pre-configured for one-click deployment on Render using the included `render.yaml` blueprint or Dockerfile.
-
-### Option A: Render Blueprint (Recommended)
-
-1. Push your repository to GitHub.
-2. In the Render Dashboard, click **New +** and select **Blueprint**.
-3. Connect your GitHub repository `Slate-Task-List`.
-4. Render automatically parses `render.yaml`, configures environment variables, builds the application, and deploys the web service.
-
-### Option B: Manual Web Service
-
-1. Create a new **Web Service** on Render connected to your repository.
-2. Select **Node** runtime.
-3. Set **Build Command**: `npm install && npm run build`
-4. Set **Start Command**: `npm start`
-5. Add Environment Variables:
-   - `NODE_ENV`: `production`
-   - `DATABASE_URL`: `file:../data/tasks.db`
-   - `JWT_SECRET`: (Click generate)
-
----
-
 ## Author
 
 - **John Varghese (J0X)**

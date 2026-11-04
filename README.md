@@ -20,7 +20,11 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/desktop.png" alt="Slate Desktop Workspace" width="100%" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/desktop.png" />
+    <source media="(prefers-color-scheme: light)" srcset="docs/screenshots/desktop-light.png" />
+    <img src="docs/screenshots/desktop-light.png" alt="Slate Desktop Workspace" width="100%" />
+  </picture>
 </p>
 
 ---
@@ -40,39 +44,76 @@ Slate is built for makers who prioritize speed, typography, and keyboard flow:
 
 ## Interface Showcase
 
+### Workspace (Light &amp; Dark)
+
 <table align="center" width="100%">
   <thead>
     <tr>
-      <th align="center" width="68%">Desktop Workspace</th>
-      <th align="center" width="32%">Mobile &amp; PWA</th>
+      <th align="center" width="50%">Light Mode</th>
+      <th align="center" width="50%">Dark Mode</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td align="center" valign="middle">
-        <img src="docs/screenshots/desktop.png" alt="Desktop Workspace" width="100%" />
+        <img src="docs/screenshots/desktop-light.png" alt="Desktop Workspace Light Mode" width="100%" />
       </td>
       <td align="center" valign="middle">
-        <img src="docs/screenshots/mobile.png" alt="Mobile Experience" width="100%" />
+        <img src="docs/screenshots/desktop.png" alt="Desktop Workspace Dark Mode" width="100%" />
       </td>
     </tr>
   </tbody>
 </table>
 
+### Mobile &amp; PWA Experience
+
+<table align="center" width="100%">
+  <thead>
+    <tr>
+      <th align="center" width="50%">Mobile (Light Theme)</th>
+      <th align="center" width="50%">Mobile (Dark Theme)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center" valign="middle">
+        <img src="docs/screenshots/mobile-light.png" alt="Mobile Experience Light Theme" width="65%" />
+      </td>
+      <td align="center" valign="middle">
+        <img src="docs/screenshots/mobile.png" alt="Mobile Experience Dark Theme" width="65%" />
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+### Precision Controls
+
 <table align="center" width="100%">
   <thead>
     <tr>
       <th align="center" width="50%">Due Date Picker</th>
-      <th align="center" width="50%">Edit/Modify</th>
+      <th align="center" width="50%">Inline Task Editor</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td align="center" valign="top">
-        <img src="docs/screenshots/calendar-picker.png" alt="Due Date Picker" width="100%" />
+        <img src="docs/screenshots/calendar-picker-light.png" alt="Due Date Picker Light" width="100%" /><br>
+        <sub>Light Theme</sub>
       </td>
       <td align="center" valign="top">
-        <img src="docs/screenshots/edit-mode.png" alt="Inline Edit Mode" width="100%" />
+        <img src="docs/screenshots/edit-mode-light.png" alt="Inline Task Editor Light" width="100%" /><br>
+        <sub>Light Theme</sub>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top">
+        <img src="docs/screenshots/calendar-picker.png" alt="Due Date Picker Dark" width="100%" /><br>
+        <sub>Dark Theme</sub>
+      </td>
+      <td align="center" valign="top">
+        <img src="docs/screenshots/edit-mode.png" alt="Inline Task Editor Dark" width="100%" /><br>
+        <sub>Dark Theme</sub>
       </td>
     </tr>
   </tbody>

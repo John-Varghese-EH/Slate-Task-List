@@ -11,6 +11,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { User, SessionInfo } from "../types/auth";
+import { PasswordSecurityBar } from "./PasswordSecurityBar";
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -473,6 +474,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                   autoComplete="new-password"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-app-bg border border-app-border text-sm text-app-text placeholder:text-app-text-muted focus:outline-none focus:border-app-accent focus:ring-1 focus:ring-app-accent transition-all text-base sm:text-sm"
                 />
+                {newPassword.length > 0 && (
+                  <PasswordSecurityBar password={newPassword} className="pt-2 px-0.5" />
+                )}
               </div>
 
               <div>

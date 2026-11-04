@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { X, Lock, Mail, User as UserIcon, Loader2, HardDrive } from "lucide-react";
+import { X, Lock, Mail, User as UserIcon, Loader2, HardDrive, Eye, EyeOff } from "lucide-react";
 import { RegisterPayload, LoginPayload } from "../types/auth";
+import { PasswordSecurityBar } from "./PasswordSecurityBar";
 
 export interface AuthCardProps {
   onLogin: (payload: LoginPayload) => Promise<boolean>;
@@ -22,6 +23,7 @@ export const AuthCard: React.FC<AuthCardProps> = ({
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -240,15 +242,34 @@ export const AuthCard: React.FC<AuthCardProps> = ({
               className="w-4 h-4 text-app-text-muted absolute left-3.5 pointer-events-none"
             />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={mode === "register" ? "Password (8+ characters)" : "Password"}
               autoComplete={mode === "register" ? "new-password" : "current-password"}
-              className="w-full pl-10 pr-3.5 py-3 text-base sm:text-xs bg-transparent text-app-text placeholder:text-app-text-muted focus:outline-none"
+              className="w-full pl-10 pr-10 py-3 text-base sm:text-xs bg-transparent text-app-text placeholder:text-app-text-muted focus:outline-none"
             />
+            {password.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="apple-press absolute right-3 p-1 text-app-text-muted hover:text-app-text transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff strokeWidth={1.5} className="w-4 h-4" />
+                ) : (
+                  <Eye strokeWidth={1.5} className="w-4 h-4" />
+                )}
+              </button>
+            )}
           </div>
         </div>
+
+        {mode === "register" && (
+          <PasswordSecurityBar password={password} className="px-0.5 pt-0.5 pb-1" />
+        )}
 
         <button
           type="submit"

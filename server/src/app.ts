@@ -25,31 +25,41 @@ export const createApp = (): Application => {
     })
   );
 
-  const allowedOrigins = [
-    env.CLIENT_URL,
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:5000",
-    "http://127.0.0.1:5000",
-  ].filter(Boolean);
-
   app.use(
-    cors({
-      origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-          return callback(null, true);
+    cors((req, callback) => {
+      const origin = req.headers.origin;
+      const rawHost = (req.headers["x-forwarded-host"] || req.headers.host || "") as string;
+      const reqHost = rawHost.split(":")[0].toLowerCase();
+
+      // allow non-browser or same-origin without origin header
+      if (!origin) {
+        return callback(null, { origin: true, credentials: true });
+      }
+
+      try {
+        const parsed = new URL(origin);
+        const originHost = parsed.hostname.toLowerCase();
+
+        // allow same host, local dev, render, or client url
+        const isSameHost = Boolean(reqHost && originHost === reqHost);
+        const isLocal = originHost === "localhost" || originHost === "127.0.0.1";
+        const isRender = originHost.endsWith(".onrender.com");
+        let isConfigured = false;
+        if (env.CLIENT_URL) {
+          try {
+            isConfigured = originHost === new URL(env.CLIENT_URL).hostname.toLowerCase();
+          } catch {}
         }
-        try {
-          const parsed = new URL(origin);
-          if (parsed.hostname.endsWith(".onrender.com") || parsed.hostname === "localhost") {
-            return callback(null, true);
-          }
-        } catch {
-          // ignore parsing error
+
+        if (isSameHost || isLocal || isRender || isConfigured) {
+          return callback(null, { origin: true, credentials: true });
         }
-        callback(new Error("CORS origin denied"));
-      },
-      credentials: true,
+      } catch {
+        // ignore url parsing error
+      }
+
+      // reject untrusted third-party origins safely without 500
+      callback(null, { origin: false });
     })
   );
 

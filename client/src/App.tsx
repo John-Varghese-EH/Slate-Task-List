@@ -17,6 +17,14 @@ import { usePwaInstall } from "./hooks/usePwaInstall";
 import { TaskFilter } from "./types/task";
 import { clearGuestTasks, migrateGuestTasksToCloud } from "./utils/syncBuffer";
 
+const getLocalTodayIso = (): string => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 export const App: React.FC = () => {
   const [showPreloader, setShowPreloader] = useState(true);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
@@ -42,6 +50,7 @@ export const App: React.FC = () => {
     changePassword,
     getSessions,
     logoutAll,
+    deleteAccount,
   } = useAuth();
 
   const {
@@ -68,7 +77,7 @@ export const App: React.FC = () => {
     refresh,
   } = useTasks(isGuest, Boolean(user), continueAsGuest);
 
-  const todayIso = new Date().toISOString().split("T")[0];
+  const todayIso = getLocalTodayIso();
 
   const handleSelectCategory = (cat: SmartCategory) => {
     setSmartCategory(cat);
@@ -393,6 +402,10 @@ export const App: React.FC = () => {
         }}
         onLogout={async () => {
           await logout();
+          refresh();
+        }}
+        onDeleteAccount={async (payload) => {
+          await deleteAccount(payload);
           refresh();
         }}
       />

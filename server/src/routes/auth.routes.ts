@@ -8,6 +8,7 @@ import {
   changePassword,
   getSessions,
   logoutAll,
+  deleteAccount,
 } from "../controllers/auth.controller";
 import { validateBody } from "../middleware/validate";
 import { requireAuth, optionalAuth } from "../middleware/auth";
@@ -16,6 +17,7 @@ import {
   loginSchema,
   updateProfileSchema,
   changePasswordSchema,
+  deleteAccountSchema,
 } from "../schemas/auth.schema";
 import { authLimiter } from "../middleware/rateLimiter";
 
@@ -29,5 +31,6 @@ router.patch("/profile", requireAuth, validateBody(updateProfileSchema), updateP
 router.post("/change-password", requireAuth, authLimiter, validateBody(changePasswordSchema), changePassword);
 router.get("/sessions", requireAuth, getSessions);
 router.post("/logout-all", requireAuth, logoutAll);
+router.delete("/account", requireAuth, authLimiter, validateBody(deleteAccountSchema), deleteAccount);
 
 export default router;

@@ -6,6 +6,7 @@ import {
   UpdateProfilePayload,
   ChangePasswordPayload,
   SessionsResponse,
+  DeleteAccountPayload,
 } from "../types/auth";
 import {
   fetchCurrentUser,
@@ -16,10 +17,12 @@ import {
   changeUserPassword,
   fetchSessions,
   logoutAllDevices,
+  deleteUserAccount,
 } from "../api/auth";
 import {
   isGuestStorageActive,
   setGuestStorageActive,
+  clearAllLocalData,
 } from "../utils/syncBuffer";
 
 export const useAuth = () => {
@@ -99,6 +102,12 @@ export const useAuth = () => {
     setUser(null);
   };
 
+  const deleteAccount = async (payload: DeleteAccountPayload): Promise<void> => {
+    await deleteUserAccount(payload);
+    clearAllLocalData();
+    setUser(null);
+  };
+
   return {
     user,
     isLoading,
@@ -113,6 +122,7 @@ export const useAuth = () => {
     changePassword,
     getSessions,
     logoutAll,
+    deleteAccount,
     refreshUser: checkAuth,
   };
 };

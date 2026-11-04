@@ -38,17 +38,45 @@ Slate is built for makers who prioritize speed, typography, and keyboard flow:
 
 ---
 
-## Screenshots
+## Interface Showcase
 
-<p align="center">
-  <img src="docs/screenshots/mobile.png" alt="Mobile View" width="45%" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/calendar-picker.png" alt="Due Date Picker" width="45%" />
-</p>
+<table align="center" width="100%">
+  <thead>
+    <tr>
+      <th align="center" width="68%">Desktop Workspace</th>
+      <th align="center" width="32%">Mobile &amp; PWA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center" valign="middle">
+        <img src="docs/screenshots/desktop.png" alt="Desktop Workspace" width="100%" />
+      </td>
+      <td align="center" valign="middle">
+        <img src="docs/screenshots/mobile.png" alt="Mobile Experience" width="100%" />
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-<p align="center">
-  <img src="docs/screenshots/edit-mode.png" alt="Inline Edit Mode" width="92%" />
-</p>
+<table align="center" width="100%">
+  <thead>
+    <tr>
+      <th align="center" width="50%">Due Date Picker</th>
+      <th align="center" width="50%">Edit/Modify</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center" valign="top">
+        <img src="docs/screenshots/calendar-picker.png" alt="Due Date Picker" width="100%" />
+      </td>
+      <td align="center" valign="top">
+        <img src="docs/screenshots/edit-mode.png" alt="Inline Edit Mode" width="100%" />
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
@@ -167,6 +195,7 @@ Verifies CRUD persistence, category filters, session authentication, and tenant 
 | `POST` | `/api/auth/change-password` | Update account password | Required |
 | `GET` | `/api/auth/sessions` | List active user sessions | Required |
 | `POST` | `/api/auth/logout-all` | Revoke all sessions across devices | Required |
+| `DELETE` | `/api/auth/account` | Permanently delete account and cascade purge all tasks & sessions | Required |
 
 ### Health & Monitoring
 
@@ -187,3 +216,4 @@ Verifies CRUD persistence, category filters, session authentication, and tenant 
 ## License
 
 See [LICENSE](LICENSE) for the full license terms.
+

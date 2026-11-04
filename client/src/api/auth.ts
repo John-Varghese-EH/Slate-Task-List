@@ -122,3 +122,17 @@ export const logoutAllDevices = async (): Promise<void> => {
   }
 };
 
+export const deleteUserAccount = async (payload: {
+  password: string;
+  confirmText?: string;
+}): Promise<void> => {
+  try {
+    await authRequest<{ message: string }>("/auth/account", {
+      method: "DELETE",
+      body: JSON.stringify(payload),
+    });
+  } finally {
+    localStorage.removeItem("slate_token");
+  }
+};
+

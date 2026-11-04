@@ -98,7 +98,7 @@ export const TaskComposer = forwardRef<TaskComposerHandle, TaskComposerProps>(
     return (
       <div
         ref={containerRef}
-        className="squircle-card mb-6 bg-app-surface p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-app-accent/30 focus-within:border-app-accent/60 shadow-xs hover:shadow-sm"
+        className="squircle-card mb-6 bg-app-surface p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-app-accent/30 focus-within:border-app-accent/60 shadow-xs hover:shadow-sm relative z-20"
       >
         <form onSubmit={handleSubmit}>
           <div className="flex items-center gap-3">
@@ -147,7 +147,7 @@ export const TaskComposer = forwardRef<TaskComposerHandle, TaskComposerProps>(
                 : "grid-rows-[0fr] opacity-0 mt-0 pt-0 border-t-0 pointer-events-none"
             }`}
           >
-            <div className="overflow-hidden space-y-3">
+            <div className={`${isExpanded ? "overflow-visible" : "overflow-hidden"} space-y-3`}>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}

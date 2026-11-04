@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import { env } from "../config/env";
-import { RegisterInput, LoginInput } from "../schemas/auth.schema";
+import { RegisterInput, LoginInput, DeleteAccountInput } from "../schemas/auth.schema";
 
 const prisma = new PrismaClient();
 
@@ -399,6 +399,67 @@ export const logoutAll = async (
     res.status(200).json({
       success: true,
       data: { message: "Signed out from all devices" },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteAccount = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        error: { code: "UNAUTHORIZED", message: "Not authenticated" },
+      });
+      return;
+    }
+
+    const { password } = req.body as DeleteAccountInput;
+    const userId = req.user.id;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        error: { code: "NOT_FOUND", message: "User not found" },
+      });
+      return;
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      res.status(400).json({
+        success: false,
+        error: { code: "BAD_REQUEST", message: "Password is incorrect" },
+      });
+      return;
+    }
+
+    // atomic cascade deletion across all related records
+    await prisma.$transaction(async (tx) => {
+      await tx.task.deleteMany({ where: { userId } });
+      await tx.session.deleteMany({ where: { userId } });
+      await tx.user.delete({ where: { id: userId } });
+    });
+
+    res.clearCookie("slate_session", {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+
+    res.status(200).json({
+      success: true,
+      data: { message: "Account and associated data deleted permanently" },
     });
   } catch (error) {
     next(error);

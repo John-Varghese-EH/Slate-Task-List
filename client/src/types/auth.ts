@@ -42,3 +42,8 @@ export interface SessionsResponse {
   sessions: SessionInfo[];
 }
 
+export interface DeleteAccountPayload {
+  password: string;
+  confirmText?: string;
+}
+

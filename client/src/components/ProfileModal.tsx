@@ -6,12 +6,17 @@ import {
   Laptop,
   Check,
   AlertCircle,
+  AlertTriangle,
   LogOut,
   KeyRound,
   Calendar,
+  Trash2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
-import { User, SessionInfo } from "../types/auth";
+import { User, SessionInfo, DeleteAccountPayload } from "../types/auth";
 import { PasswordSecurityBar } from "./PasswordSecurityBar";
+import { playTactileFeedback } from "../utils/haptics";
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -28,6 +33,7 @@ interface ProfileModalProps {
   }>;
   onLogoutAll: () => Promise<void>;
   onLogout: () => Promise<void>;
+  onDeleteAccount: (payload: DeleteAccountPayload) => Promise<void>;
 }
 
 type Tab = "account" | "devices" | "security";
@@ -41,6 +47,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   onGetSessions,
   onLogoutAll,
   onLogout,
+  onDeleteAccount,
 }) => {
   const [activeTab, setActiveTab] = useState<Tab>("account");
   const [name, setName] = useState(user?.name || "");
@@ -59,6 +66,47 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
     text: string;
   } | null>(null);
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [showDeletePassword, setShowDeletePassword] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDeletePassword("");
+    setDeleteConfirmText("");
+    setShowDeletePassword(false);
+    setDeleteError(null);
+  };
+
+  const handleDeleteAccountSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!deletePassword || deleteConfirmText.trim() !== "DELETE") {
+      setDeleteError("Please enter your password and type DELETE to confirm");
+      return;
+    }
+
+    try {
+      setIsDeletingAccount(true);
+      setDeleteError(null);
+      playTactileFeedback();
+      await onDeleteAccount({
+        password: deletePassword,
+        confirmText: deleteConfirmText,
+      });
+      handleCloseDeleteModal();
+      onClose();
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to delete account";
+      setDeleteError(message);
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       setName(user.name);
@@ -72,6 +120,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
+      handleCloseDeleteModal();
       return;
     }
 
@@ -90,13 +139,17 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
+      if (e.key === "Escape") {
+        if (isDeleteModalOpen) {
+          handleCloseDeleteModal();
+        } else if (isOpen) {
+          onClose();
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, isDeleteModalOpen, onClose]);
 
   if (!isOpen || !user) return null;
 
@@ -439,7 +492,8 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
           )}
 
           {activeTab === "security" && (
-            <form onSubmit={handleChangePassword} className="space-y-4">
+            <div className="space-y-4">
+              <form onSubmit={handleChangePassword} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-app-text-secondary uppercase tracking-wider mb-1.5">
                   Current Password
@@ -504,9 +558,161 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                 </button>
               </div>
             </form>
+
+            <div className="pt-4 mt-2 border-t border-app-border space-y-3">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-app-danger uppercase tracking-wider">
+                <AlertTriangle strokeWidth={1.8} className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>Danger Zone</span>
+              </div>
+
+              <div className="p-3.5 rounded-xl border border-rose-500/20 bg-rose-500/5 space-y-2.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                  <div>
+                    <h4 className="text-xs font-semibold text-app-text">Delete Account</h4>
+                    <p className="text-[11px] text-app-text-muted mt-0.5">
+                      Permanently erase your account, sessions, and all tasks.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playTactileFeedback();
+                      setIsDeleteModalOpen(true);
+                    }}
+                    className="apple-press px-3.5 py-1.5 rounded-xl bg-app-danger text-white text-xs font-semibold shadow-xs hover:opacity-90 flex-shrink-0 inline-flex items-center justify-center gap-1.5 self-start sm:self-auto"
+                  >
+                    <Trash2 strokeWidth={1.5} className="w-3.5 h-3.5" />
+                    <span>Delete Account...</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            </div>
           )}
         </div>
       </div>
+
+      {isDeleteModalOpen && (
+        <div
+          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+          onClick={handleCloseDeleteModal}
+        >
+          <div
+            className="squircle-card w-full max-w-md bg-app-surface border border-rose-500/30 p-5 sm:p-6 shadow-2xl space-y-4 animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center flex-shrink-0">
+                  <Trash2 strokeWidth={2} className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-semibold text-app-text">
+                    Permanently Delete Account
+                  </h3>
+                  <p className="text-xs text-app-text-muted mt-0.5">
+                    Irreversible enterprise wipe
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleCloseDeleteModal}
+                className="apple-press text-app-text-muted hover:text-app-text p-1.5 rounded-lg"
+                aria-label="Close dialog"
+              >
+                <X strokeWidth={1.8} className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 text-xs text-rose-600 dark:text-rose-400 space-y-1 leading-relaxed">
+              <p className="font-semibold flex items-center gap-1.5">
+                <AlertCircle strokeWidth={1.8} className="w-4 h-4 flex-shrink-0" />
+                <span>Warning: All data will be permanently wiped</span>
+              </p>
+              <p className="pl-5 text-[11px] opacity-90">
+                This will immediately purge your account ({user.email}), terminate all active sessions, and erase all stored tasks from the database.
+              </p>
+            </div>
+
+            {deleteError && (
+              <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-xs text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                <AlertCircle strokeWidth={1.5} className="w-4 h-4 flex-shrink-0" />
+                <span>{deleteError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleDeleteAccountSubmit} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-semibold text-app-text-secondary uppercase tracking-wider mb-1">
+                  Current Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showDeletePassword ? "text" : "password"}
+                    required
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    placeholder="Confirm your password"
+                    autoComplete="current-password"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-app-bg border border-app-border text-sm text-app-text placeholder:text-app-text-muted focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowDeletePassword((prev) => !prev)}
+                    aria-label={showDeletePassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-2.5 text-app-text-muted hover:text-app-text p-1 rounded"
+                  >
+                    {showDeletePassword ? (
+                      <EyeOff strokeWidth={1.5} className="w-4 h-4" />
+                    ) : (
+                      <Eye strokeWidth={1.5} className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-app-text-secondary uppercase tracking-wider mb-1">
+                  Type <span className="font-mono text-rose-500 font-bold">DELETE</span> to confirm
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  placeholder="DELETE"
+                  autoComplete="off"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-app-bg border border-app-border text-sm text-app-text placeholder:text-app-text-muted focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all font-mono"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={handleCloseDeleteModal}
+                  disabled={isDeletingAccount}
+                  className="apple-press px-4 py-2 rounded-xl text-xs font-medium text-app-text-secondary hover:text-app-text border border-app-border hover:bg-app-bg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={
+                    isDeletingAccount ||
+                    !deletePassword ||
+                    deleteConfirmText.trim() !== "DELETE"
+                  }
+                  className="apple-press px-4 py-2 rounded-xl bg-app-danger text-white text-xs font-semibold shadow-xs hover:opacity-90 disabled:opacity-40 transition-opacity flex items-center gap-1.5"
+                >
+                  <Trash2 strokeWidth={1.5} className="w-3.5 h-3.5" />
+                  <span>{isDeletingAccount ? "Deleting..." : "Permanently Delete"}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

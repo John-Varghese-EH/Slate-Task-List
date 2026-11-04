@@ -209,40 +209,39 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
   return (
     <div ref={containerRef} className="relative inline-flex items-center">
-      <button
-        type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
-        className={`apple-press inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium shadow-2xs transition-all ${
+      <div
+        className={`inline-flex items-center rounded-xl border text-xs font-medium shadow-2xs transition-all ${
           value
             ? "bg-app-accent/15 border-app-accent/40 text-app-accent font-semibold"
             : "bg-app-surface border-app-border text-app-text-secondary hover:text-app-text hover:border-app-accent/40"
         }`}
       >
-        <CalendarIcon strokeWidth={1.8} className="w-3.5 h-3.5 flex-shrink-0" />
-        <span className="tabular-nums">{displayLabel || placeholder}</span>
+        <button
+          type="button"
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="apple-press inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl"
+        >
+          <CalendarIcon strokeWidth={1.8} className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="tabular-nums">{displayLabel || placeholder}</span>
+        </button>
         {value && (
-          <span
-            role="button"
-            tabIndex={0}
+          <button
+            type="button"
             onClick={handleClear}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handleClear();
-              }
-            }}
             aria-label="Clear date"
-            className="hover:opacity-75 p-0.5 -mr-1 rounded"
+            className="apple-press pr-2.5 pl-0.5 py-1.5 hover:opacity-75 focus:outline-none"
           >
             <X strokeWidth={2} className="w-3 h-3 text-app-accent" />
-          </span>
+          </button>
         )}
-      </button>
+      </div>
 
       {isOpen && (
         <div
           className={`squircle-card absolute top-full mt-1.5 z-50 w-64 max-w-[calc(100vw-2rem)] p-3 bg-app-surface border border-app-border shadow-xl ${
-            align === "right" ? "right-0" : "left-0"
+            align === "right"
+              ? "right-0"
+              : "left-0 sm:left-0 max-sm:right-0 max-sm:left-auto"
           }`}
           onClick={(e) => e.stopPropagation()}
         >

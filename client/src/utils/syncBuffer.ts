@@ -207,3 +207,15 @@ export const migrateGuestTasksToCloud = async (): Promise<number> => {
   return count;
 };
 
+export const clearAllLocalData = (): void => {
+  try {
+    localStorage.removeItem(BUFFER_KEY);
+    localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem(GUEST_TASKS_KEY);
+    localStorage.removeItem(GUEST_FLAG_KEY);
+    localStorage.removeItem("slate_token");
+  } catch {
+    // storage disabled
+  }
+};
+

@@ -194,4 +194,78 @@ describe("Authentication & Multi-Tenant Tests", () => {
     expect(res.body.success).toBe(true);
     expect(res.body.data.user).toBeNull();
   });
+
+  it("deletes account with valid password and cascades deletion of tasks and sessions", async () => {
+    const regRes = await request(app).post("/api/auth/register").send({
+      email: "delete.me@example.com",
+      password: "strongPassword123",
+      name: "Delete Tester",
+    });
+    const token = regRes.body.data.token;
+    const userId = regRes.body.data.user.id;
+
+    // create task belonging to this user
+    await request(app)
+      .post("/api/tasks")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ title: "Account deletion test task", priority: "high" });
+
+    // delete account
+    const delRes = await request(app)
+      .delete("/api/auth/account")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ password: "strongPassword123" });
+
+    expect(delRes.status).toBe(200);
+    expect(delRes.body.success).toBe(true);
+
+    // verify user is completely removed
+    const userInDb = await prisma.user.findUnique({ where: { id: userId } });
+    expect(userInDb).toBeNull();
+
+    // verify cascaded task deletion
+    const tasksInDb = await prisma.task.findMany({ where: { userId } });
+    expect(tasksInDb.length).toBe(0);
+
+    // verify cascaded session deletion
+    const sessionsInDb = await prisma.session.findMany({ where: { userId } });
+    expect(sessionsInDb.length).toBe(0);
+
+    // verify subsequent auth requests are rejected
+    const meRes = await request(app)
+      .get("/api/auth/me")
+      .set("Authorization", `Bearer ${token}`);
+    expect(meRes.status).toBe(200);
+    expect(meRes.body.data.user).toBeNull();
+  });
+
+  it("rejects account deletion with incorrect password", async () => {
+    const regRes = await request(app).post("/api/auth/register").send({
+      email: "keep.me@example.com",
+      password: "strongPassword123",
+      name: "Keep Tester",
+    });
+    const token = regRes.body.data.token;
+    const userId = regRes.body.data.user.id;
+
+    const delRes = await request(app)
+      .delete("/api/auth/account")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ password: "wrongPassword" });
+
+    expect(delRes.status).toBe(400);
+    expect(delRes.body.success).toBe(false);
+
+    // verify user still exists in database
+    const userInDb = await prisma.user.findUnique({ where: { id: userId } });
+    expect(userInDb).not.toBeNull();
+  });
+
+  it("rejects account deletion when unauthenticated", async () => {
+    const res = await request(app)
+      .delete("/api/auth/account")
+      .send({ password: "somePassword" });
+
+    expect(res.status).toBe(401);
+  });
 });

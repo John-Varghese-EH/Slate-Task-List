@@ -63,7 +63,16 @@ export const changePasswordSchema = z.object({
     .max(128, "New password cannot exceed 128 characters"),
 });
 
+export const deleteAccountSchema = z.object({
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(1, "Password cannot be empty")
+    .max(128, "Password cannot exceed 128 characters"),
+  confirmText: z.string().optional(),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+export type DeleteAccountInput = z.infer<typeof deleteAccountSchema>;

@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+client/node_modules
+server/node_modules
+
+# Build artifacts
+client/dist
+server/dist
+
+# Git
+.git
+.gitignore
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Local SQLite databases
+server/data/*.db
+server/data/*.db-journal
+server/data/*.db-shm
+server/data/*.db-wal
+
+# Documentation assets
+docs/screenshots
+
+# System and logs
+*.log
+.DS_Store
+Thumbs.db
+.idea
+.vscode

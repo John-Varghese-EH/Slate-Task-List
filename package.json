@@ -1,0 +1,20 @@
+{
+  "name": "slate-task-list",
+  "version": "1.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "A simple polished task list application where users can add, edit, delete, and mark tasks as complete.",
+  "scripts": {
+    "postinstall": "npm --prefix server install && npm --prefix client install",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build:server": "npm --prefix server run build",
+    "build:client": "npm --prefix client run build",
+    "db:prepare": "mkdir -p server/data && npm --prefix server run prisma:push",
+    "build": "npm run db:prepare && npm run build:server && npm run build:client",
+    "preview": "npm --prefix client run preview",
+    "start": "node server/dist/src/server.js",
+    "test": "npm --prefix server test",
+    "db:seed": "npm --prefix server run seed"
+  }
+}

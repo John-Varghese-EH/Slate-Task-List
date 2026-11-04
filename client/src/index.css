@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg-rgb: 247 249 252;
+  --color-surface-rgb: 255 255 255;
+  --color-surface-secondary-rgb: 241 244 249;
+  --color-border-rgb: 192 202 218;
+  --color-text-rgb: 15 23 42;
+  --color-text-secondary-rgb: 71 85 105;
+  --color-text-muted-rgb: 100 116 139;
+  --color-accent-rgb: 14 116 225;
+  --color-danger-rgb: 239 68 68;
+  --color-success-rgb: 34 197 94;
+
+  --color-bg: rgb(var(--color-bg-rgb));
+  --color-surface: rgb(var(--color-surface-rgb));
+  --color-surface-secondary: rgb(var(--color-surface-secondary-rgb));
+  --color-border: rgb(var(--color-border-rgb));
+  --color-text: rgb(var(--color-text-rgb));
+  --color-text-secondary: rgb(var(--color-text-secondary-rgb));
+  --color-text-muted: rgb(var(--color-text-muted-rgb));
+  --color-accent: rgb(var(--color-accent-rgb));
+  --color-danger: rgb(var(--color-danger-rgb));
+  --color-success: rgb(var(--color-success-rgb));
+}
+
+.dark {
+  --color-bg-rgb: 11 13 16;
+  --color-surface-rgb: 22 24 29;
+  --color-surface-secondary-rgb: 34 37 45;
+  --color-border-rgb: 44 48 58;
+  --color-text-rgb: 248 250 252;
+  --color-text-secondary-rgb: 148 163 184;
+  --color-text-muted-rgb: 100 116 139;
+  --color-accent-rgb: 59 130 246;
+  --color-danger-rgb: 248 113 113;
+  --color-success-rgb: 74 222 128;
+}
+
+/* Minimal scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.18);
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.38);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+}
+
+.dark * {
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+body {
+  background-color: var(--color-bg);
+  background-image: radial-gradient(ellipse 90% 60% at 50% -20%, rgba(14, 116, 225, 0.05), transparent 75%);
+  color: var(--color-text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
+  letter-spacing: -0.012em;
+  min-height: 100vh;
+}
+
+.dark body {
+  background-image: radial-gradient(ellipse 90% 60% at 50% -20%, rgba(59, 130, 246, 0.07), transparent 75%);
+}
+
+input, textarea, button, select {
+  font-family: inherit;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* tactile checkbox with 44px touch target */
+.tactile-checkbox {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  border: 1.5px solid var(--color-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  background-color: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 44x44px minimum hit area expansion for seamless mobile thumb tapping */
+.tactile-checkbox::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  bottom: -12px;
+  left: -12px;
+  right: -12px;
+}
+
+.tactile-checkbox:hover {
+  border-color: var(--color-accent);
+  transform: scale(1.05);
+}
+
+.tactile-checkbox:active {
+  transform: scale(0.85);
+}
+
+.tactile-checkbox[data-checked="true"] {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 2px 8px -1px rgba(14, 116, 225, 0.45);
+}
+
+.tactile-checkbox svg {
+  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 140ms ease;
+}
+
+/* Continuous curvature superellipse cards */
+.squircle-card {
+  border-radius: 18px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+}
+
+.dark .squircle-card {
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+}
+
+.squircle-tile {
+  border-radius: 24px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+}
+
+.dark .squircle-tile {
+  border: 1px solid var(--color-border);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Frosted glass material */
+.apple-glass {
+  background-color: rgba(var(--color-bg-rgb), 0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+.dark .apple-glass {
+  background-color: rgba(var(--color-bg-rgb), 0.85);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+/* Fluid spring curves */
+.apple-spring {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apple-press {
+  transition: transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.apple-press:active {
+  transform: scale(0.96);
+}
+
+/* Skeletal shimmer pulse */
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.skeleton-shimmer {
+  animation: skeletonPulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Preloader check draw animation */
+@keyframes checkDraw {
+  0% {
+    stroke-dashoffset: 32;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.preloader-check-path {
+  stroke-dasharray: 32;
+  stroke-dashoffset: 32;
+  animation: checkDraw 320ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards 80ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apple-press:active,
+  .tactile-checkbox:active {
+    transform: none !important;
+  }
+  .skeleton-shimmer {
+    animation: none !important;
+  }
+  .preloader-check-path {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+/* Mobile iOS / Android safe area insets */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+

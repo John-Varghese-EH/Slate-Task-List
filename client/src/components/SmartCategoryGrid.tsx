@@ -73,7 +73,7 @@ export const SmartCategoryGrid: React.FC<SmartCategoryGridProps> = ({
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-4 sm:mb-6">
       {categories.map((cat) => {
         const isSelected = activeCategory === cat.id;
         return (
@@ -84,7 +84,7 @@ export const SmartCategoryGrid: React.FC<SmartCategoryGridProps> = ({
               playTactileFeedback();
               onSelectCategory(cat.id);
             }}
-            className={`squircle-card apple-press relative flex flex-col justify-between p-3.5 sm:p-4 bg-app-surface text-left transition-all duration-200 cursor-pointer focus:outline-none ${
+            className={`squircle-card apple-press relative flex flex-col justify-between p-3.5 sm:p-4 bg-app-surface text-left transition-all duration-200 cursor-pointer focus:outline-none touch-manipulation select-none active:scale-[0.97] ${
               isSelected
                 ? "ring-2 ring-app-accent border-transparent shadow-sm scale-[1.01]"
                 : "hover:border-app-accent/40 hover:shadow-xs"

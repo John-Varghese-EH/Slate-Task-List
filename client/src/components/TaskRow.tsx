@@ -44,6 +44,74 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const editInputRef = useRef<HTMLInputElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
 
+  // touch swipe state
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const isHorizontalSwipeRef = useRef<boolean | null>(null);
+  const hasTriggeredHapticRef = useRef(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isEditing) return;
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    isHorizontalSwipeRef.current = null;
+    hasTriggeredHapticRef.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || isEditing) return;
+    const touch = e.touches[0];
+    const dx = touch.clientX - touchStartRef.current.x;
+    const dy = touch.clientY - touchStartRef.current.y;
+
+    if (isHorizontalSwipeRef.current === null) {
+      if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+        isHorizontalSwipeRef.current = Math.abs(dx) > Math.abs(dy);
+      }
+    }
+
+    if (isHorizontalSwipeRef.current) {
+      setIsDragging(true);
+      // rubber-banding resistance past 80px
+      const clamped =
+        Math.abs(dx) > 80
+          ? Math.sign(dx) * (80 + Math.pow(Math.abs(dx) - 80, 0.72))
+          : dx;
+      setDragOffset(clamped);
+
+      if (Math.abs(clamped) >= 72 && !hasTriggeredHapticRef.current) {
+        playTactileFeedback();
+        hasTriggeredHapticRef.current = true;
+      } else if (Math.abs(clamped) < 72 && hasTriggeredHapticRef.current) {
+        hasTriggeredHapticRef.current = false;
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (isDragging && isHorizontalSwipeRef.current) {
+      if (dragOffset >= 72) {
+        playTactileFeedback();
+        onToggle(task.id);
+      } else if (dragOffset <= -72) {
+        playTactileFeedback();
+        onDelete(task.id);
+      }
+    }
+    touchStartRef.current = null;
+    isHorizontalSwipeRef.current = null;
+    setIsDragging(false);
+    setDragOffset(0);
+  };
+
+  const handleTouchCancel = () => {
+    touchStartRef.current = null;
+    isHorizontalSwipeRef.current = null;
+    setIsDragging(false);
+    setDragOffset(0);
+  };
+
   useEffect(() => {
     setTitleDraft(task.title);
     setDescriptionDraft(task.description);
@@ -142,17 +210,65 @@ export const TaskRow: React.FC<TaskRowProps> = ({
     : null;
 
   return (
-    <div
-      ref={rowRef}
-      tabIndex={0}
-      onClick={onSelect}
-      className={`squircle-card group relative flex items-start justify-between gap-3 p-3.5 bg-app-surface transition-all duration-200 cursor-pointer focus:outline-none ${
-        isSelected
-          ? "ring-2 ring-app-accent/50 shadow-xs"
-          : "hover:border-app-accent/40 hover:shadow-xs"
-      } ${task.completed ? "opacity-60 bg-app-surface/50" : ""}`}
-    >
-      <div className="flex items-start gap-3 flex-1 min-w-0">
+    <div className="relative overflow-hidden rounded-[18px]">
+      {/* swipe gesture backdrop actions */}
+      <div className="absolute inset-0 flex items-center justify-between px-5 pointer-events-none rounded-[18px]">
+        {/* left action: complete */}
+        <div
+          className={`flex items-center gap-2 transition-opacity ${
+            dragOffset > 10 ? "opacity-100" : "opacity-0"
+          }`}
+          style={{
+            transform: `scale(${Math.min(1.2, Math.max(0.7, dragOffset / 50))})`,
+          }}
+        >
+          <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shadow-xs">
+            <Check strokeWidth={2.5} className="w-4 h-4 text-white" />
+          </div>
+          <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+            {task.completed ? "Mark Incomplete" : "Complete"}
+          </span>
+        </div>
+
+        {/* right action: delete */}
+        <div
+          className={`flex items-center gap-2 transition-opacity ${
+            dragOffset < -10 ? "opacity-100" : "opacity-0"
+          }`}
+          style={{
+            transform: `scale(${Math.min(1.2, Math.max(0.7, Math.abs(dragOffset) / 50))})`,
+          }}
+        >
+          <span className="text-xs text-rose-600 dark:text-rose-400 font-bold">
+            Delete
+          </span>
+          <div className="w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center shadow-xs">
+            <Trash2 strokeWidth={2.2} className="w-4 h-4 text-white" />
+          </div>
+        </div>
+      </div>
+
+      <div
+        ref={rowRef}
+        tabIndex={0}
+        onClick={onSelect}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
+        style={{
+          transform: `translateX(${dragOffset}px)`,
+          transition: isDragging
+            ? "none"
+            : "transform 260ms cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
+        className={`squircle-card group relative flex items-start justify-between gap-3 p-3.5 bg-app-surface transition-all duration-200 cursor-pointer focus:outline-none touch-pan-y ${
+          isSelected
+            ? "ring-2 ring-app-accent/50 shadow-xs"
+            : "hover:border-app-accent/40 hover:shadow-xs"
+        } ${task.completed ? "opacity-60 bg-app-surface/50" : ""}`}
+      >
+        <div className="flex items-start gap-3 flex-1 min-w-0">
         {/* Tactile custom checkbox */}
         <button
           type="button"
@@ -325,6 +441,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           </button>
         </div>
       )}
+      </div>
     </div>
   );
 };

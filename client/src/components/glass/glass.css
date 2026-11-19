@@ -1,0 +1,68 @@
+/* apple liquid glass optical materials */
+
+:where(.liquid-glass-pane) {
+  position: relative;
+  display: block;
+  isolation: isolate;
+}
+
+.liquid-glass-surface {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.liquid-glass-backdrop {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  will-change: backdrop-filter;
+}
+
+.liquid-glass-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  mix-blend-mode: hard-light;
+  will-change: opacity, transform;
+  transition: opacity 0.4s ease-out;
+}
+
+.liquid-glass-caustic {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transition: opacity 0.3s ease-out;
+}
+
+.liquid-glass-rim {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.liquid-glass-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.liquid-glass-content {
+  position: relative;
+  z-index: 10;
+  isolation: isolate;
+}

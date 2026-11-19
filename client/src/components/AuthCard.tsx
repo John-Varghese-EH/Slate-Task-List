@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { X, Lock, Mail, User as UserIcon, Loader2, HardDrive, Eye, EyeOff } from "lucide-react";
 import { RegisterPayload, LoginPayload } from "../types/auth";
 import { PasswordSecurityBar } from "./PasswordSecurityBar";
+import { LiquidGlassPane, appleCardLens } from "./glass";
 
 export interface AuthCardProps {
   onLogin: (payload: LoginPayload) => Promise<boolean>;
@@ -86,12 +87,8 @@ export const AuthCard: React.FC<AuthCardProps> = ({
     }
   };
 
-  return (
-    <div
-      className={`squircle-tile relative w-full max-w-sm bg-app-surface border border-app-border p-6 sm:p-7 shadow-2xl transition-all ${
-        isModal ? "z-10 animate-scale-in" : "shadow-xl"
-      }`}
-    >
+  const cardContent = (
+    <>
       {isModal && onClose && (
         <button
           type="button"
@@ -124,26 +121,45 @@ export const AuthCard: React.FC<AuthCardProps> = ({
             </div>
           </div>
         )}
-        <h2 id="auth-card-title" className="text-base sm:text-lg font-bold tracking-tight text-app-text">
+        <h2
+          id="auth-card-title"
+          className={`text-base sm:text-lg font-bold tracking-tight ${
+            isModal ? "text-app-text" : "text-white"
+          }`}
+        >
           {mode === "login" ? "Sign In to Slate" : "Create Slate Account"}
         </h2>
-        <p className="text-xs text-app-text-secondary mt-1">
+        <p
+          className={`text-xs mt-1 ${
+            isModal ? "text-app-text-secondary" : "text-slate-300"
+          }`}
+        >
           Sync tasks across your devices
         </p>
       </div>
 
       {/* Segmented tab switcher */}
-      <div className="flex items-center p-1 rounded-xl bg-app-bg border border-app-border mb-4 text-xs font-medium">
+      <div
+        className={`flex items-center p-1 rounded-xl mb-4 text-xs font-medium border transition-all ${
+          isModal
+            ? "bg-app-bg/80 border-app-border"
+            : "bg-black/45 border-white/15 backdrop-blur-md"
+        }`}
+      >
         <button
           type="button"
           onClick={() => {
             setMode("login");
             setError(null);
           }}
-          className={`apple-press flex-1 py-1.5 rounded-lg text-center transition-all ${
+          className={`apple-press flex-1 py-1.5 rounded-lg text-center font-medium transition-all duration-150 ${
             mode === "login"
-              ? "bg-app-surface text-app-text font-semibold shadow-xs"
-              : "text-app-text-secondary hover:text-app-text"
+              ? isModal
+                ? "bg-app-surface text-app-text font-semibold shadow-xs ring-1 ring-app-border"
+                : "bg-white/20 text-white font-medium shadow-[0_1px_3px_rgba(0,0,0,0.3)] ring-1 ring-white/20 backdrop-blur-sm"
+              : isModal
+              ? "text-app-text-secondary hover:text-app-text"
+              : "text-zinc-300 hover:text-white"
           }`}
         >
           Sign In
@@ -154,10 +170,14 @@ export const AuthCard: React.FC<AuthCardProps> = ({
             setMode("register");
             setError(null);
           }}
-          className={`apple-press flex-1 py-1.5 rounded-lg text-center transition-all ${
+          className={`apple-press flex-1 py-1.5 rounded-lg text-center font-medium transition-all duration-150 ${
             mode === "register"
-              ? "bg-app-surface text-app-text font-semibold shadow-xs"
-              : "text-app-text-secondary hover:text-app-text"
+              ? isModal
+                ? "bg-app-surface text-app-text font-semibold shadow-xs ring-1 ring-app-border"
+                : "bg-white/20 text-white font-medium shadow-[0_1px_3px_rgba(0,0,0,0.3)] ring-1 ring-white/20 backdrop-blur-sm"
+              : isModal
+              ? "text-app-text-secondary hover:text-app-text"
+              : "text-zinc-300 hover:text-white"
           }`}
         >
           Create Account
@@ -202,68 +222,110 @@ export const AuthCard: React.FC<AuthCardProps> = ({
 
       {/* grouped inset input container */}
       <form onSubmit={handleSubmit} className="space-y-3.5">
-        <div className="rounded-2xl bg-app-bg/80 border border-app-border divide-y divide-app-border overflow-hidden focus-within:ring-2 focus-within:ring-app-accent/25 focus-within:border-app-accent/40 transition-all">
+        <div
+          className={`rounded-2xl border divide-y overflow-hidden transition-all ${
+            isModal
+              ? "bg-app-bg/80 border-app-border divide-app-border focus-within:ring-2 focus-within:ring-app-accent/25 focus-within:border-app-accent/40"
+              : "bg-black/50 border-white/15 divide-white/10 focus-within:ring-2 focus-within:ring-blue-500/40 focus-within:border-blue-400/80"
+          }`}
+        >
           {mode === "register" && (
             <div className="relative flex items-center">
+              <label htmlFor="auth-name" className="sr-only">Full Name</label>
               <UserIcon
                 strokeWidth={1.5}
-                className="w-4 h-4 text-app-text-muted absolute left-3.5 pointer-events-none"
+                className={`w-4 h-4 absolute left-3.5 pointer-events-none ${
+                  isModal ? "text-app-text-muted" : "text-slate-400"
+                }`}
               />
               <input
+                id="auth-name"
+                name="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Full Name"
                 autoComplete="name"
-                className="w-full pl-10 pr-3.5 py-3 text-base sm:text-xs bg-transparent text-app-text placeholder:text-app-text-muted focus:outline-none"
+                spellCheck={false}
+                enterKeyHint="next"
+                className={`w-full pl-10 pr-3.5 py-3 text-base sm:text-xs bg-transparent focus:outline-none ${
+                  isModal
+                    ? "text-app-text placeholder:text-app-text-muted"
+                    : "text-white placeholder:text-slate-400"
+                }`}
               />
             </div>
           )}
 
           <div className="relative flex items-center">
+            <label htmlFor="auth-email" className="sr-only">Email address</label>
             <Mail
               strokeWidth={1.5}
-              className="w-4 h-4 text-app-text-muted absolute left-3.5 pointer-events-none"
+              className={`w-4 h-4 absolute left-3.5 pointer-events-none ${
+                isModal ? "text-app-text-muted" : "text-slate-400"
+              }`}
             />
             <input
               ref={emailInputRef}
+              id="auth-email"
+              name="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email address"
               autoComplete="email"
-              className="w-full pl-10 pr-3.5 py-3 text-base sm:text-xs bg-transparent text-app-text placeholder:text-app-text-muted focus:outline-none"
+              spellCheck={false}
+              enterKeyHint="next"
+              className={`w-full pl-10 pr-3.5 py-3 text-base sm:text-xs bg-transparent focus:outline-none ${
+                isModal
+                  ? "text-app-text placeholder:text-app-text-muted"
+                    : "text-white placeholder:text-slate-400"
+              }`}
             />
           </div>
 
           <div className="relative flex items-center">
+            <label htmlFor="auth-password" className="sr-only">Password</label>
             <Lock
               strokeWidth={1.5}
-              className="w-4 h-4 text-app-text-muted absolute left-3.5 pointer-events-none"
+              className={`w-4 h-4 absolute left-3.5 pointer-events-none ${
+                isModal ? "text-app-text-muted" : "text-slate-400"
+              }`}
             />
             <input
+              id="auth-password"
+              name="password"
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={mode === "register" ? "Password (8+ characters)" : "Password"}
               autoComplete={mode === "register" ? "new-password" : "current-password"}
-              className="w-full pl-10 pr-10 py-3 text-base sm:text-xs bg-transparent text-app-text placeholder:text-app-text-muted focus:outline-none"
+              enterKeyHint="done"
+              className={`w-full pl-10 pr-10 py-3 text-base sm:text-xs bg-transparent focus:outline-none ${
+                isModal
+                  ? "text-app-text placeholder:text-app-text-muted"
+                  : "text-white placeholder:text-slate-400"
+              }`}
             />
-            {password.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                className="apple-press absolute right-3 p-1 text-app-text-muted hover:text-app-text transition-colors"
-              >
-                {showPassword ? (
-                  <EyeOff strokeWidth={1.5} className="w-4 h-4" />
-                ) : (
-                  <Eye strokeWidth={1.5} className="w-4 h-4" />
-                )}
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              tabIndex={0}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
+              title={showPassword ? "Hide password" : "Show password"}
+              className={`apple-press absolute right-2.5 p-1.5 rounded-lg transition-colors focus:outline-none focus:ring-1 focus:ring-white/20 ${
+                isModal
+                  ? "text-app-text-muted hover:text-app-text hover:bg-app-bg"
+                  : "text-zinc-400 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              {showPassword ? (
+                <EyeOff strokeWidth={1.5} className="w-4 h-4" />
+              ) : (
+                <Eye strokeWidth={1.5} className="w-4 h-4" />
+              )}
+            </button>
           </div>
         </div>
 
@@ -274,7 +336,7 @@ export const AuthCard: React.FC<AuthCardProps> = ({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="apple-press w-full py-2.5 sm:py-3 rounded-xl bg-app-accent text-white text-xs sm:text-sm font-semibold hover:opacity-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-xs"
+          className="apple-press w-full py-2.5 sm:py-3 rounded-xl bg-gradient-to-b from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 active:scale-[0.985] text-white text-xs sm:text-sm font-medium tracking-tight shadow-[0_4px_16px_rgba(37,99,235,0.4),inset_0_1px_0_rgba(255,255,255,0.3)] ring-1 ring-blue-400/50 disabled:opacity-50 transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
           {isSubmitting ? (
             <>
@@ -290,8 +352,18 @@ export const AuthCard: React.FC<AuthCardProps> = ({
       {onContinueAsGuest && (
         <>
           <div className="relative my-3 flex items-center justify-center">
-            <div className="w-full border-t border-app-border" />
-            <span className="absolute bg-app-surface px-2.5 text-[10px] uppercase font-semibold tracking-wider text-app-text-muted">
+            <div
+              className={`w-full border-t ${
+                isModal ? "border-app-border" : "border-white/15"
+              }`}
+            />
+            <span
+              className={`absolute px-2.5 text-[10px] uppercase font-semibold tracking-wider ${
+                isModal
+                  ? "bg-app-surface text-app-text-muted"
+                  : "bg-slate-900 text-slate-400"
+              }`}
+            >
               or
             </span>
           </div>
@@ -302,14 +374,65 @@ export const AuthCard: React.FC<AuthCardProps> = ({
               onContinueAsGuest();
               if (onClose) onClose();
             }}
-            className="apple-press w-full py-2.5 rounded-xl bg-app-bg border border-app-border text-app-text hover:text-app-text hover:border-app-accent/40 text-xs font-medium transition-all flex items-center justify-center gap-2 group shadow-2xs"
+            className={`apple-press w-full py-2.5 rounded-xl text-xs font-medium transition-all duration-150 flex items-center justify-center gap-2 group shadow-2xs active:scale-[0.985] ${
+              isModal
+                ? "bg-app-bg border border-app-border text-app-text hover:text-app-text hover:border-app-accent/40"
+                : "bg-white/[0.06] hover:bg-white/[0.12] active:bg-white/[0.04] border border-white/15 hover:border-white/25 text-zinc-200 hover:text-white shadow-xs backdrop-blur-sm"
+            }`}
           >
-            <HardDrive strokeWidth={1.5} className="w-3.5 h-3.5 text-app-text-muted group-hover:text-app-accent transition-colors" />
+            <HardDrive
+              strokeWidth={1.5}
+              className={`w-3.5 h-3.5 transition-colors ${
+                isModal
+                  ? "text-app-text-muted group-hover:text-app-accent"
+                  : "text-slate-300 group-hover:text-white"
+              }`}
+            />
             <span>Continue as Guest</span>
-            <span className="text-[10px] text-app-text-muted">(On-device storage)</span>
+            <span
+              className={`text-[10px] ${
+                isModal ? "text-app-text-muted" : "text-slate-300"
+              }`}
+            >
+              (On-device storage)
+            </span>
           </button>
         </>
       )}
-    </div>
+    </>
+  );
+
+  if (isModal) {
+    return (
+      <div
+        role="region"
+        aria-labelledby="auth-card-title"
+        className="squircle-tile relative w-full max-w-sm bg-app-surface border border-app-border p-6 sm:p-7 shadow-2xl z-10 animate-scale-in text-app-text"
+        style={{ borderRadius: "28px" }}
+      >
+        {cardContent}
+      </div>
+    );
+  }
+
+  return (
+    <LiquidGlassPane
+      borderRadius={28}
+      displacement={32}
+      lens={appleCardLens}
+      tintColor="rgba(15, 23, 42, 0.32)"
+      blur={8}
+      saturate={1.8}
+      onMouseEnter={() => {
+        (window as any).__GE_valley?.startHoverTransition?.();
+      }}
+      onMouseLeave={() => {
+        (window as any).__GE_valley?.stopHoverTransition?.();
+      }}
+      className="w-full max-w-sm p-6 sm:p-7 transition-all text-white shadow-2xl"
+    >
+      {cardContent}
+    </LiquidGlassPane>
   );
 };
+

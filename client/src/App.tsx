@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Plus } from "lucide-react";
 import { Header } from "./components/Header";
 import { FilterBar } from "./components/FilterBar";
 import { TaskComposer, TaskComposerHandle } from "./components/TaskComposer";
+import { playTactileFeedback } from "./utils/haptics";
 import { TaskList } from "./components/TaskList";
 import { Toast } from "./components/Toast";
 import { Preloader } from "./components/Preloader";
@@ -204,7 +206,7 @@ export const App: React.FC = () => {
   // render auth page if unauthenticated and not guest
   if (!isAuthLoading && !user && !isGuest) {
     return (
-      <div className="min-h-screen bg-app-bg text-app-text transition-colors duration-200">
+      <div className="min-h-screen bg-black text-app-text transition-colors duration-200 relative">
         {showPreloader && (
           <Preloader onFinish={() => setShowPreloader(false)} />
         )}
@@ -341,7 +343,7 @@ export const App: React.FC = () => {
             </span>
           </div>
           <p className="sm:hidden text-[11px] text-app-text-muted">
-            Tap task to select • Double tap to edit
+            Swipe right to complete &bull; Swipe left to delete
           </p>
           <p className="text-[11px] text-app-text-muted">
             Slate (Task List) by{" "}
@@ -355,6 +357,21 @@ export const App: React.FC = () => {
             </a>
           </p>
         </footer>
+
+        {/* mobile quick add floating button */}
+        <button
+          type="button"
+          onClick={() => {
+            playTactileFeedback();
+            composerRef.current?.focus();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          aria-label="Add new task"
+          className="sm:hidden fixed right-5 z-40 w-14 h-14 rounded-2xl bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-[0_8px_24px_rgba(37,99,235,0.45),inset_0_1px_0_rgba(255,255,255,0.35)] flex items-center justify-center active:scale-90 transition-transform duration-150 touch-manipulation ring-1 ring-white/20"
+          style={{ bottom: "max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 1.25rem))" }}
+        >
+          <Plus strokeWidth={2.5} className="w-6 h-6" />
+        </button>
       </div>
 
       <Toast toast={toast} onDismiss={dismissToast} />

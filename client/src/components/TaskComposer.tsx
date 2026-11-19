@@ -125,6 +125,7 @@ export const TaskComposer = forwardRef<TaskComposerHandle, TaskComposerProps>(
               onClick={() => setIsExpanded(true)}
               onKeyDown={handleKeyDown}
               placeholder="Add a new task..."
+              enterKeyHint="done"
               autoComplete="off"
               className="w-full bg-transparent text-base sm:text-sm text-app-text placeholder:text-app-text-muted font-medium focus:outline-none"
             />
@@ -195,18 +196,18 @@ export const TaskComposer = forwardRef<TaskComposerHandle, TaskComposerProps>(
                   />
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-end gap-2 w-full sm:w-auto pt-1 sm:pt-0">
                   <button
                     type="button"
                     onClick={() => setIsExpanded(false)}
-                    className="apple-press px-3 py-1.5 sm:py-1 text-xs text-app-text-secondary hover:text-app-text transition-colors min-h-[36px] sm:min-h-0 flex items-center font-medium"
+                    className="apple-press flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1 text-xs text-app-text-secondary hover:text-app-text transition-colors min-h-[38px] sm:min-h-0 flex items-center font-medium rounded-xl hover:bg-app-surface-secondary"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={!title.trim() || isSubmitting}
-                    className="apple-press px-4 py-1.5 sm:py-1 rounded-xl bg-app-accent text-white text-xs font-semibold hover:opacity-90 disabled:opacity-40 transition-opacity shadow-xs min-h-[36px] sm:min-h-0 flex items-center"
+                    className="apple-press flex-1 sm:flex-none justify-center px-4 py-2 sm:py-1 rounded-xl bg-app-accent text-white text-xs font-semibold hover:opacity-90 disabled:opacity-40 transition-opacity shadow-xs min-h-[38px] sm:min-h-0 flex items-center"
                   >
                     Add Task
                   </button>

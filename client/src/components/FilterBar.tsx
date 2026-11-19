@@ -25,12 +25,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 }) => {
   return (
     <div className="space-y-3 pt-2 pb-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
+      <div className="flex items-center justify-between gap-2.5 sm:gap-3">
         {/* Segmented filter control */}
         <div
           role="tablist"
           aria-label="Filter tasks by status"
-          className="grid grid-cols-3 sm:inline-flex items-center p-1 rounded-2xl bg-app-surface border border-app-border text-xs font-medium shadow-xs w-full sm:w-auto"
+          className="grid grid-cols-3 sm:inline-flex items-center p-1 rounded-2xl bg-app-surface border border-app-border text-xs font-medium shadow-xs flex-1 sm:flex-initial"
         >
           {(["all", "active", "completed"] as const).map((tab) => (
             <button
@@ -54,7 +54,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           <button
             type="button"
             onClick={onClearCompleted}
-            className="apple-press text-xs font-semibold text-app-text-muted hover:text-app-danger transition-colors text-right py-1 px-2.5 focus:outline-none min-h-[32px] sm:min-h-[36px] flex items-center justify-end rounded-lg hover:bg-rose-500/10 self-end sm:self-auto"
+            className="apple-press text-xs font-semibold text-app-text-muted hover:text-app-danger transition-colors py-2 px-3 focus:outline-none min-h-[38px] sm:min-h-[36px] flex items-center justify-center rounded-xl bg-app-surface border border-app-border hover:bg-rose-500/10 shadow-xs flex-shrink-0"
           >
             Clear {completedCount} completed
           </button>

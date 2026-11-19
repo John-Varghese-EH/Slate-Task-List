@@ -254,3 +254,27 @@ input, textarea, button, select {
   }
 }
 
+/* 3D flower valley canvas */
+html.homepage,
+body.homepage {
+  overflow: hidden !important;
+  height: 100% !important;
+  overscroll-behavior: none !important;
+}
+#valley {
+  position: fixed;
+  inset: 0;
+}
+.js-canvas-container {
+  position: absolute;
+  inset: 0;
+}
+.js-canvas-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+.lil-gui {
+  display: none !important;
+}
+
